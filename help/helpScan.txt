@@ -1,5 +1,5 @@
 Syntax:  scan {address CIDR} {network name}
-Example: scan 192.168.1.0/24 someNetwork
+Example: scan 192.168.1.0/24 someName
 
 * scan will create a file call {network name}_{address}_{subnet}.scan
-* Example:  someNetwork_192.168.1.0_28.scan
+* Example:  someName_192.168.1.0_28.scan
