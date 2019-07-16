@@ -7,26 +7,65 @@ import os.path
 import os
 
 
+def newline():
+    print('')
+
+
+def listFiles():
+    files = os.listdir(".\\")
+    newline()
+    print("Name\t\tCIDR")
+    for file in files:
+        if '.scan' in file:
+            splitFile = file.split('_')
+            splitExt = splitFile[2].split('.')
+            print(splitFile[0] + "\t\t" + splitFile[1] + "/" + splitExt[0])
+
+
+def openRead(file):
+    try:
+        with open(file) as openFile:
+            readFile = openFile.read()
+            print(readFile)
+            newline()
+    except:
+        print('\nerror~! Help file ' + file + ' is missing!')
+        newline()
+
+
+# Pipes help files to openRead(file)
+def help(detail):
+    if detail == '?' or detail == '? ':
+        newline()
+        openRead(".\help\helpShort.txt")
+    elif detail == 'scan' or detail == 'scan ' or detail == 'scan ?':
+        newline()
+        openRead(".\help\helpScan.txt")
+
+
+# Scans network defined by user
+# Creates a file if there isn't one, updates the file if there is
 def ipscan(scanArg):
-    # Prompt the user to input a network address and name
+    if '?' in scanArg:
+        newline()
+        openRead(".\help\helpScan.txt")
+    # Build the network address and name from user input
     splitArg = scanArg.split(' ')
     net_addr = splitArg[1]
     net_name = splitArg[2] + '_' + \
         net_addr.split('/')[0] + '_' + net_addr.split('/')[-1]+".scan"
-
     # Create the network
     ip_net = ipaddress.ip_network(net_addr)
-
-    # Get all hosts on that network
     all_hosts = list(ip_net.hosts())
 
     # Configure subprocess to hide the console window
     info = subprocess.STARTUPINFO()
     info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     info.wShowWindow = subprocess.SW_HIDE
-
+    print(net_name)
     # create the file path (currently working directory)
     file_path = ("./" + net_name)
+    print(file_path)
     # If the file exists
     if os.path.isfile(file_path):
         # Read the file into the OrderedDict
@@ -39,7 +78,7 @@ def ipscan(scanArg):
         for i in range(len(all_hosts)):
             output = subprocess.Popen(['ping', '-n', '1', '-w', '500', str(all_hosts[i])],
                                       stdout=subprocess.PIPE, startupinfo=info).communicate()[0]
-            print(output.decode('utf-8'))  # testing
+            #print(output.decode('utf-8'))  # testing
             # Depending on result write status to OrderedDict
             if "Destination host unreachable" in output.decode('utf-8'):
                 ip = str(all_hosts[i])
@@ -68,7 +107,7 @@ def ipscan(scanArg):
                 for row in rows:
                     if row['ip'] == ip:
                         row['status'] = status
-        print('dict update complete')  # testing
+        #print('dict update complete')  # testing
 
         # Rewrite file with current Dict
         with open(file_path, "w", newline='') as outfile:
@@ -77,10 +116,10 @@ def ipscan(scanArg):
             writer.writeheader()
             for row in rows:
                 writer.writerow(row)
-        print('file updated')  # test should display file?
+        print('File Updated')  # test should display file?
 
     # If file does not exist create new list, scan, and write to file
-    else:
+    elif not os.path.isfile(file_path):
         # Create the CSV file
         text_file = open(net_name, "w")
 
@@ -113,6 +152,8 @@ def ipscan(scanArg):
         for ip in scan_list:
             text_file.write(ip)
         print("Scan Complete")
+    else:
+        print("Error")
 
 
 def commandTree():
@@ -123,10 +164,9 @@ def commandTree():
             # Terminal prompt that accepts commands from the list below
             userCmd = input("ipscan~$ ")
             if 'scan' in userCmd:
-                print("if clause for scan")
                 ipscan(userCmd)
             elif 'list' in userCmd:
-                list(userCmd)
+                listFiles()
             elif 'delete' in userCmd:
                 delete(userCmd)
             elif 'note' in userCmd:
