@@ -1,0 +1,5 @@
+Syntax:  note {address CIDR} {network name} {ip address} anything you want
+Example: note 192.168.1.0/24 someNetworkName 192.168.1.254 this is the last host avaiable
+
+* anything entered after the {ip address} will be considered part of the note.
+* to delete a note, put in a space after {ip address}
