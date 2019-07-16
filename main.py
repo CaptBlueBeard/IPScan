@@ -5,7 +5,6 @@ import time
 import csv
 import os.path
 import os
-import keyboard
 
 
 def newline():
@@ -41,7 +40,13 @@ def help(detail):
     if detail == '?' or detail == '? ':
         newline()
         openRead(".\help\helpShort.txt")
+    elif detail == '':
+        newline()
+        openRead(".\help\helpShort.txt")
     elif detail == 'scan' or detail == 'scan ' or detail == 'scan ?':
+        newline()
+        openRead(".\help\helpScan.txt")
+    elif detail == 'note' or detail == 'note ' or detail == 'note ?':
         newline()
         openRead(".\help\helpScan.txt")
 
@@ -159,7 +164,7 @@ def ipscan(scanArg):
 
 
 def notes(notesArg):
-    if '?' in notesArg:
+    if notesArg == 'notes' or notesArg == 'notes ?' or notesArg == 'notes ':
         newline()
         openRead(".\help\helpNote.txt")
     notesSplit = notesArg.split(' ', 4)
