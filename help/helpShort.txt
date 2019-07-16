@@ -1,0 +1,7 @@
+Commands available:
+
+delete - deletes specified scan file
+display - displays specified scan
+list - lists existing scan files
+notes - allows adding of notes to IP addresses in a scan files
+scan - performs ip scan of the network specified
