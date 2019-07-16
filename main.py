@@ -5,6 +5,7 @@ import time
 import csv
 import os.path
 import os
+import keyboard
 
 
 def newline():
@@ -12,6 +13,7 @@ def newline():
 
 
 def listFiles():
+    # list the .scan files in the working directory
     files = os.listdir(".\\")
     newline()
     print("Name\t\tCIDR")
@@ -23,6 +25,7 @@ def listFiles():
 
 
 def openRead(file):
+    # Prints contents of file to terminal
     try:
         with open(file) as openFile:
             readFile = openFile.read()
@@ -33,8 +36,8 @@ def openRead(file):
         newline()
 
 
-# Pipes help files to openRead(file)
 def help(detail):
+    # Pipes help files to openRead(file)
     if detail == '?' or detail == '? ':
         newline()
         openRead(".\help\helpShort.txt")
@@ -43,29 +46,27 @@ def help(detail):
         openRead(".\help\helpScan.txt")
 
 
-# Scans network defined by user
-# Creates a file if there isn't one, updates the file if there is
 def ipscan(scanArg):
+    # Scans network defined by user
+    # Creates a file if there isn't one, updates the file if there is
     if '?' in scanArg:
         newline()
         openRead(".\help\helpScan.txt")
     # Build the network address and name from user input
     splitArg = scanArg.split(' ')
-    net_addr = splitArg[1]
-    net_name = splitArg[2] + '_' + \
-        net_addr.split('/')[0] + '_' + net_addr.split('/')[-1]+".scan"
+    netAddr = splitArg[1]
+    networkName = splitArg[2] + '_' + \
+        netAddr.split('/')[0] + '_' + netAddr.split('/')[-1]+".scan"
     # Create the network
-    ip_net = ipaddress.ip_network(net_addr)
+    ip_net = ipaddress.ip_network(netAddr)
     all_hosts = list(ip_net.hosts())
 
     # Configure subprocess to hide the console window
     info = subprocess.STARTUPINFO()
     info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     info.wShowWindow = subprocess.SW_HIDE
-    print(net_name)
     # create the file path (currently working directory)
-    file_path = ("./" + net_name)
-    print(file_path)
+    file_path = ("./" + networkName)
     # If the file exists
     if os.path.isfile(file_path):
         # Read the file into the OrderedDict
@@ -78,7 +79,7 @@ def ipscan(scanArg):
         for i in range(len(all_hosts)):
             output = subprocess.Popen(['ping', '-n', '1', '-w', '500', str(all_hosts[i])],
                                       stdout=subprocess.PIPE, startupinfo=info).communicate()[0]
-            #print(output.decode('utf-8'))  # testing
+            # print(output.decode('utf-8'))  # testing
             # Depending on result write status to OrderedDict
             if "Destination host unreachable" in output.decode('utf-8'):
                 ip = str(all_hosts[i])
@@ -107,7 +108,7 @@ def ipscan(scanArg):
                 for row in rows:
                     if row['ip'] == ip:
                         row['status'] = status
-        #print('dict update complete')  # testing
+        # print('dict update complete')  # testing
 
         # Rewrite file with current Dict
         with open(file_path, "w", newline='') as outfile:
@@ -116,12 +117,13 @@ def ipscan(scanArg):
             writer.writeheader()
             for row in rows:
                 writer.writerow(row)
+
         print('File Updated')  # test should display file?
 
     # If file does not exist create new list, scan, and write to file
     elif not os.path.isfile(file_path):
         # Create the CSV file
-        text_file = open(net_name, "w")
+        text_file = open(networkName, "w")
 
         # create nested list and variables for fieldnames
         scan_list = [('{},{},{},{}\n'.format('ip', 'status', 'date', 'notes'))]
@@ -156,8 +158,38 @@ def ipscan(scanArg):
         print("Error")
 
 
+def notes(notesArg):
+    if '?' in notesArg:
+        newline()
+        openRead(".\help\helpNote.txt")
+    notesSplit = notesArg.split(' ', 4)
+    netAddress = notesSplit[1]
+    netName = notesSplit[2]
+    ip = notesSplit[3]
+    note = notesSplit[4]
+    filePath = (netName + '_' + netAddress.split('/')
+                [0] + '_' + netAddress.split('/')[-1] + ".scan")
+    # Read the file into the OrderedDict
+    with open(filePath) as n:
+        rows = csv.DictReader(n)
+        rows = [row for row in rows]
+    for row in rows:
+        if row['ip'] == ip:
+            row['notes'] = note
+            newline()
+            print(row['ip'] + ',' + row['status'] +
+                  ',' + row['date'] + ',' + row['notes'])
+    with open(filePath, "w", newline='') as outfile:
+        fieldnames = ['ip', 'status', 'date', 'notes']
+        writer = csv.DictWriter(outfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
+    print('Note Added')
+
+
 def commandTree():
-    # CLI backbone
+    # commands for the terminal
     a = 1
     while a == 1:
         try:
@@ -170,7 +202,7 @@ def commandTree():
             elif 'delete' in userCmd:
                 delete(userCmd)
             elif 'note' in userCmd:
-                note(userCmd)
+                notes(userCmd)
             elif 'display' in userCmd:
                 display(userCmd)
             elif userCmd == 'exit' or userCmd == 'end' or userCmd == 'quit':
