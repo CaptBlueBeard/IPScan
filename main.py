@@ -15,12 +15,13 @@ def listFiles():
     # list the .scan files in the working directory
     files = os.listdir(".\\")
     newline()
-    print("CIDR\t\t\tName")
+    print("{:<15} {:<15}".format('CIDR', 'Name'))
     for f in files:
         if '.scan' in f:
             splitFile = f.split('_')
             splitExt = splitFile[2].split('.')
-            print(splitFile[1] + "/" + splitExt[0] + "\t\t\t" + splitFile[0])
+            print("{:<15} {:<15}".format(
+                (splitFile[1] + "/" + splitExt[0]), splitFile[0]))
 
 
 def openRead(file):
@@ -65,6 +66,7 @@ def delete(deleteArg):
     if deleteArg == 'delete' or deleteArg == 'delete ?' or deleteArg == 'delete ':
         newline()
         openRead(".\help\helpDelete.txt")
+        return
     f = fileName(deleteArg)
     if os.path.isfile(f):
         if input("Are you sure you want to delete " + f + "? (y/n) ") == "y":
@@ -80,6 +82,7 @@ def ipscan(scanArg):
     if '?' in scanArg:
         newline()
         openRead(".\help\helpScan.txt")
+        return
     # Build the network address and name from user input
     splitArg = scanArg.split(' ')
     netAddr = splitArg[1]
@@ -239,6 +242,26 @@ def commandTree():
                 help(userCmd)
         except:
             continue
+
+
+def display(displayArg):
+    if displayArg == 'display' or displayArg == 'diplay ?' or displayArg == 'display ':
+        newline()
+        openRead(".\\help\\helpDisplay.txt")
+        return
+    f = fileName(displayArg)
+    print("{:<15} {:<15} {:<20} {:<15}".format(
+        'ip', 'status', 'date contacted', 'notes'))
+    if os.path.isfile(f):
+        # Read the file into the OrderedDict
+        with open(f) as f:
+            rows = csv.DictReader(f)
+            rows = [row for row in rows]
+        for row in rows:
+            print("{:<15} {:<15} {:<20} {:<15}".format(
+                row['ip'], row['status'], row['date'], row['notes']))
+    else:
+        print('No scan to display')
 
 
 commandTree()
