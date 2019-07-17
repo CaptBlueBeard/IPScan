@@ -6,6 +6,6 @@
 - [x]  add notes section in the file 
 - [x]  add a way to enter notes
 - [x]  command to list exisiting scans
-- [ ]  display function
+- [x]  display function
 - [ ]  Add hostname lookups to the scans
-- [ ]  delete function
+- [x]  delete function
