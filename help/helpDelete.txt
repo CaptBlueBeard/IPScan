@@ -1,0 +1,5 @@
+Syntax:  delete {address CIDR} {network name} 
+Example: delete 192.168.1.0/24 someNetworkName
+
+* will delete the file assocated with that scan.
+* to create a new file do a new scan.
