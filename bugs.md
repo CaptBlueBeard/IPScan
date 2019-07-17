@@ -1,0 +1,1 @@
+-[ ] List fuction will not list correctly if an underscore in the name of the network
