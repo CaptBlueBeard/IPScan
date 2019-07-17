@@ -15,12 +15,12 @@ def listFiles():
     # list the .scan files in the working directory
     files = os.listdir(".\\")
     newline()
-    print("Name\t\tCIDR")
-    for file in files:
-        if '.scan' in file:
-            splitFile = file.split('_')
+    print("CIDR\t\t\tName")
+    for f in files:
+        if '.scan' in f:
+            splitFile = f.split('_')
             splitExt = splitFile[2].split('.')
-            print(splitFile[0] + "\t\t" + splitFile[1] + "/" + splitExt[0])
+            print(splitFile[1] + "/" + splitExt[0] + "\t\t\t" + splitFile[0])
 
 
 def openRead(file):
@@ -49,6 +49,29 @@ def help(detail):
     elif detail == 'note' or detail == 'note ' or detail == 'note ?':
         newline()
         openRead(".\help\helpScan.txt")
+
+
+def fileName(fileArg):
+    # accepts the users input and returns the file name for the scan
+    fileSplit = fileArg.split(' ')
+    netAddr = fileSplit[1]
+    f = fileSplit[2] + '_' + \
+        netAddr.split('/')[0] + '_' + netAddr.split('/')[-1]+".scan"
+    return f
+
+
+def delete(deleteArg):
+    # deletes a file associated with a scan.
+    if deleteArg == 'delete' or deleteArg == 'delete ?' or deleteArg == 'delete ':
+        newline()
+        openRead(".\help\helpDelete.txt")
+    f = fileName(deleteArg)
+    if os.path.isfile(f):
+        if input("Are you sure you want to delete " + f + "? (y/n) ") == "y":
+            os.unlink(f)
+            print('Scan deleted')
+    else:
+        print('No scan found')
 
 
 def ipscan(scanArg):
