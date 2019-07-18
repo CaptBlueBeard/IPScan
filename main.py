@@ -5,6 +5,7 @@ import time
 import csv
 import os.path
 import os
+import socket
 
 
 def newline():
@@ -91,7 +92,6 @@ def ipscan(scanArg):
     # Create the network
     ip_net = ipaddress.ip_network(netAddr)
     all_hosts = list(ip_net.hosts())
-
     # Configure subprocess to hide the console window
     info = subprocess.STARTUPINFO()
     info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
@@ -101,15 +101,20 @@ def ipscan(scanArg):
     # If the file exists
     if os.path.isfile(file_path):
         # Read the file into the OrderedDict
+        host = ''
         with open(file_path) as f:
             rows = csv.DictReader(f)
             rows = [row for row in rows]
-
         # For each IP address in the subnet,
         # run the ping command with subprocess.popen interface
         for i in range(len(all_hosts)):
             output = subprocess.Popen(['ping', '-n', '1', '-w', '500', str(all_hosts[i])],
                                       stdout=subprocess.PIPE, startupinfo=info).communicate()[0]
+            try:
+                hostName = (socket.gethostbyaddr(str(all_hosts[i])))
+                host = str(hostName[0])
+            except socket.herror:
+                pass
             # print(output.decode('utf-8'))  # testing
             # Depending on result write status to OrderedDict
             if "Destination host unreachable" in output.decode('utf-8'):
@@ -118,12 +123,14 @@ def ipscan(scanArg):
                 for row in rows:
                     if row['ip'] == ip:
                         row['status'] = status
+
             elif "Request timed out" in output.decode('utf-8'):
                 ip = str(all_hosts[i])
                 status = "Offline"
                 for row in rows:
                     if row['ip'] == ip:
                         row['status'] = status
+
             elif "Reply from" in output.decode('utf-8'):
                 ip = str(all_hosts[i])
                 status = "Online"
@@ -132,6 +139,7 @@ def ipscan(scanArg):
                     if row['ip'] == ip:
                         row['status'] = status
                         row['date'] = time.strftime('%m/%d/%Y %H:%M:%S')
+
             # Catch all for any other result
             else:
                 ip = str(all_hosts[i])
@@ -143,7 +151,7 @@ def ipscan(scanArg):
 
         # Rewrite file with current Dict
         with open(file_path, "w", newline='') as outfile:
-            fieldnames = ['ip', 'status', 'date', 'notes']
+            fieldnames = ['ip', 'host', 'status', 'date', 'notes']
             writer = csv.DictWriter(outfile, fieldnames=fieldnames)
             writer.writeheader()
             for row in rows:
@@ -157,17 +165,23 @@ def ipscan(scanArg):
         text_file = open(networkName, "w")
 
         # create nested list and variables for fieldnames
-        scan_list = [('{},{},{},{}\n'.format('ip', 'status', 'date', 'notes'))]
+        scan_list = [('{},{},{},{},{}\n'.format(
+            'ip', 'host', 'status', 'date', 'notes'))]
         ip = ''
         status = ''
         date = ''
         notes = ''
-
+        host = ''
         # For each IP address in the subnet,
         # run the ping command with subprocess.popen interface
         for i in range(len(all_hosts)):
             output = subprocess.Popen(['ping', '-n', '1', '-w', '500', str(all_hosts[i])],
                                       stdout=subprocess.PIPE, startupinfo=info).communicate()[0]
+            try:
+                hostName = (socket.gethostbyaddr(str(all_hosts[i])))
+                host = str(hostName[0])
+            except socket.herror:
+                pass
             if "Destination host unreachable" in output.decode('utf-8'):
                 ip = str(all_hosts[i])
                 status = "Offline"
@@ -180,7 +194,8 @@ def ipscan(scanArg):
                 ip = str(all_hosts[i])
                 status = "Online"
                 date = time.strftime('%m/%d/%Y %H:%M:%S')
-            scan_list.append('{},{},{},{}\n'.format(ip, status, date, notes))
+            scan_list.append('{},{},{},{},{}\n'.format(
+                ip, host, status, date, notes))
         # Write list to file
         for ip in scan_list:
             text_file.write(ip)
@@ -245,21 +260,22 @@ def commandTree():
 
 
 def display(displayArg):
-    if displayArg == 'display' or displayArg == 'diplay ?' or displayArg == 'display ':
+    # displays scans to the terminal
+    if displayArg == 'display' or displayArg == 'display ?' or displayArg == 'display ':
         newline()
         openRead(".\\help\\helpDisplay.txt")
         return
     f = fileName(displayArg)
-    print("{:<15} {:<15} {:<20} {:<15}".format(
-        'ip', 'status', 'date contacted', 'notes'))
+    print("{:<17} {:<40} {:<10} {:<20} {:<50}".format(
+        'ip', 'host', 'status', 'date contacted', 'notes'))
     if os.path.isfile(f):
         # Read the file into the OrderedDict
         with open(f) as f:
             rows = csv.DictReader(f)
             rows = [row for row in rows]
         for row in rows:
-            print("{:<15} {:<15} {:<20} {:<15}".format(
-                row['ip'], row['status'], row['date'], row['notes']))
+            print("{:<17} {:<40} {:<10} {:<20} {:<50}".format(
+                row['ip'], row['host'], row['status'], row['date'], row['notes']))
     else:
         print('No scan to display')
 
