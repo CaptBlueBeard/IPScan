@@ -9,3 +9,5 @@
 - [x]  display function
 - [ ]  Add hostname lookups to the scans
 - [x]  delete function
+- [ ]  add pause when the display function fills up the terminal, with the ability to continue or exit
+- [ ]  add something to to show that scans are running
