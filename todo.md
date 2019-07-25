@@ -7,7 +7,8 @@
 - [x]  add a way to enter notes
 - [x]  command to list exisiting scans
 - [x]  display function
-- [ ]  Add hostname lookups to the scans
+- [x]  Add hostname lookups to the scans
 - [x]  delete function
 - [ ]  add pause when the display function fills up the terminal, with the ability to continue or exit
-- [ ]  add something to to show that scans are running
+- [x]  add something to to show that scans are running
+- [ ]  build a single file exe for Windows
