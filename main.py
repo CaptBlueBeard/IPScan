@@ -23,6 +23,7 @@ def listFiles():
             splitExt = splitFile[2].split('.')
             print("{:<15} {:<15}".format(
                 (splitFile[1] + "/" + splitExt[0]), splitFile[0]))
+    newline()
 
 
 def openRead(file):
@@ -115,6 +116,7 @@ def ipscan(scanArg):
                 host = str(hostName[0])
             except socket.herror:
                 pass
+            print('.', end='', flush=True)
             # print(output.decode('utf-8'))  # testing
             # Depending on result write status to OrderedDict
             if "Destination host unreachable" in output.decode('utf-8'):
@@ -182,6 +184,7 @@ def ipscan(scanArg):
                 host = str(hostName[0])
             except socket.herror:
                 pass
+            print('.', end='', flush=True)
             if "Destination host unreachable" in output.decode('utf-8'):
                 ip = str(all_hosts[i])
                 status = "Offline"
@@ -253,7 +256,7 @@ def commandTree():
                 display(userCmd)
             elif userCmd == 'exit' or userCmd == 'end' or userCmd == 'quit':
                 a = 0
-            else:
+            elif userCmd == '?':
                 help(userCmd)
         except:
             continue
