@@ -6,6 +6,7 @@ import csv
 import os.path
 import os
 import socket
+import msvcrt
 
 
 def newline():
@@ -115,6 +116,7 @@ def ipscan(scanArg):
                 hostName = (socket.gethostbyaddr(str(all_hosts[i])))
                 host = str(hostName[0])
             except socket.herror:
+                host = ''
                 pass
             print('.', end='', flush=True)
             # print(output.decode('utf-8'))  # testing
@@ -125,6 +127,7 @@ def ipscan(scanArg):
                 for row in rows:
                     if row['ip'] == ip:
                         row['status'] = status
+                        row['host'] = host
 
             elif "Request timed out" in output.decode('utf-8'):
                 ip = str(all_hosts[i])
@@ -132,6 +135,7 @@ def ipscan(scanArg):
                 for row in rows:
                     if row['ip'] == ip:
                         row['status'] = status
+                        row['host'] = host
 
             elif "Reply from" in output.decode('utf-8'):
                 ip = str(all_hosts[i])
@@ -141,6 +145,7 @@ def ipscan(scanArg):
                     if row['ip'] == ip:
                         row['status'] = status
                         row['date'] = time.strftime('%m/%d/%Y %H:%M:%S')
+                        row['host'] = host
 
             # Catch all for any other result
             else:
@@ -183,6 +188,7 @@ def ipscan(scanArg):
                 hostName = (socket.gethostbyaddr(str(all_hosts[i])))
                 host = str(hostName[0])
             except socket.herror:
+                host = ''
                 pass
             print('.', end='', flush=True)
             if "Destination host unreachable" in output.decode('utf-8'):
@@ -269,6 +275,7 @@ def display(displayArg):
         openRead(".\\help\\helpDisplay.txt")
         return
     f = fileName(displayArg)
+    i = 0
     print("{:<17} {:<40} {:<10} {:<20} {:<50}".format(
         'ip', 'host', 'status', 'date contacted', 'notes'))
     if os.path.isfile(f):
@@ -277,6 +284,11 @@ def display(displayArg):
             rows = csv.DictReader(f)
             rows = [row for row in rows]
         for row in rows:
+            if i > os.get_terminal_size()[1] - 2:
+                i = 0
+                if input('Press ENTER to continue.  Press q + ENTER to quit ') == 'q':
+                    return
+            i += 1
             print("{:<17} {:<40} {:<10} {:<20} {:<50}".format(
                 row['ip'], row['host'], row['status'], row['date'], row['notes']))
     else:
