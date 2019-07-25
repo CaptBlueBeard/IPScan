@@ -9,6 +9,7 @@
 - [x]  display function
 - [x]  Add hostname lookups to the scans
 - [x]  delete function
-- [ ]  add pause when the display function fills up the terminal, with the ability to continue or exit
+- [x]  add pause when the display function fills up the terminal, with the ability to continue or exit
 - [x]  add something to to show that scans are running
 - [ ]  build a single file exe for Windows
+- [ ]  add a better pause or quit at the end of the terminal
