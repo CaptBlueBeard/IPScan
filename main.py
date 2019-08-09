@@ -6,8 +6,6 @@ import csv
 import os.path
 import os
 import socket
-import msvcrt
-
 
 def newline():
     print('')
@@ -43,16 +41,16 @@ def help(detail):
     # Pipes help files to openRead(file)
     if detail == '?' or detail == '? ':
         newline()
-        openRead(".\help\helpShort.txt")
+        openRead(".\\help\\helpShort.txt")
     elif detail == '':
         newline()
-        openRead(".\help\helpShort.txt")
+        openRead(".\\help\\helpShort.txt")
     elif detail == 'scan' or detail == 'scan ' or detail == 'scan ?':
         newline()
-        openRead(".\help\helpScan.txt")
+        openRead(".\\help\\helpScan.txt")
     elif detail == 'note' or detail == 'note ' or detail == 'note ?':
         newline()
-        openRead(".\help\helpScan.txt")
+        openRead(".\\help\\helpScan.txt")
 
 
 def fileName(fileArg):
@@ -284,6 +282,7 @@ def display(displayArg):
             rows = csv.DictReader(f)
             rows = [row for row in rows]
         for row in rows:
+            # get the terminal size and present an option to quit
             if i > os.get_terminal_size()[1] - 2:
                 i = 0
                 if input('Press ENTER to continue.  Press q + ENTER to quit ') == 'q':
@@ -295,4 +294,11 @@ def display(displayArg):
         print('No scan to display')
 
 
+def splashScreen():
+    newline()
+    print('Enter "?" for a list of commands.')
+    newline()
+
+splashScreen()
 commandTree()
+
